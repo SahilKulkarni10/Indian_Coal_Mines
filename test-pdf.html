@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        button {
+            background: #3B82F6;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            background: #2563EB;
+        }
+        .output {
+            margin-top: 20px;
+            padding: 15px;
+            background: #F3F4F6;
+            border-radius: 8px;
+            min-height: 100px;
+        }
+        .success {
+            color: #059669;
+        }
+        .error {
+            color: #DC2626;
+        }
+    </style>
+</head>
+<body>
+    <h1>jsPDF Test Page</h1>
+    <p>Click the buttons below to test PDF generation:</p>
+    
+    <button onclick="testSimplePDF()">Test Simple PDF</button>
+    <button onclick="testTablePDF()">Test PDF with Table</button>
+    <button onclick="testComplexPDF()">Test Complex PDF</button>
+    
+    <div class="output" id="output">
+        <p>Test results will appear here...</p>
+    </div>
+
+    <script>
+        const output = document.getElementById('output');
+
+        function log(message, isError = false) {
+            const p = document.createElement('p');
+            p.textContent = message;
+            p.className = isError ? 'error' : 'success';
+            output.appendChild(p);
+        }
+
+        function testSimplePDF() {
+            output.innerHTML = '<p>Testing simple PDF...</p>';
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                doc.text('Hello CoalSight AI!', 10, 10);
+                doc.text('This is a test PDF', 10, 20);
+                
+                doc.save('test-simple.pdf');
+                log('✓ Simple PDF generated successfully!');
+            } catch (error) {
+                log('✗ Error: ' + error.message, true);
+                console.error(error);
+            }
+        }
+
+        function testTablePDF() {
+            output.innerHTML = '<p>Testing PDF with table...</p>';
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                doc.text('Coal Mines Test Report', 10, 10);
+                
+                doc.autoTable({
+                    startY: 20,
+                    head: [['Mine Name', 'State', 'Status']],
+                    body: [
+                        ['Test Mine 1', 'Jharkhand', 'Active'],
+                        ['Test Mine 2', 'Odisha', 'Active'],
+                        ['Test Mine 3', 'Chhattisgarh', 'Inactive']
+                    ],
+                    theme: 'striped',
+                    headStyles: { fillColor: [59, 130, 246] }
+                });
+                
+                doc.save('test-table.pdf');
+                log('✓ PDF with table generated successfully!');
+            } catch (error) {
+                log('✗ Error: ' + error.message, true);
+                console.error(error);
+            }
+        }
+
+        function testComplexPDF() {
+            output.innerHTML = '<p>Testing complex PDF...</p>';
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Title page
+                doc.setFillColor(59, 130, 246);
+                doc.rect(0, 0, 210, 40, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(20);
+                doc.text('CoalSight AI Test Report', 105, 25, { align: 'center' });
+                
+                // Reset text color
+                doc.setTextColor(0, 0, 0);
+                doc.setFontSize(12);
+                doc.text('Generated: ' + new Date().toLocaleString(), 10, 50);
+                
+                // Summary table
+                doc.autoTable({
+                    startY: 60,
+                    head: [['Metric', 'Value']],
+                    body: [
+                        ['Total Mines', '150'],
+                        ['Active Mines', '120'],
+                        ['Inactive Mines', '30']
+                    ],
+                    theme: 'grid',
+                    headStyles: { fillColor: [59, 130, 246] }
+                });
+                
+                // Mines table
+                doc.autoTable({
+                    startY: doc.lastAutoTable.finalY + 10,
+                    head: [['#', 'Mine Name', 'State', 'District', 'Status']],
+                    body: [
+                        ['1', 'Jharia Coalfield', 'Jharkhand', 'Dhanbad', 'Active'],
+                        ['2', 'Raniganj Coalfield', 'West Bengal', 'Bardhaman', 'Active'],
+                        ['3', 'Singareni Collieries', 'Telangana', 'Khammam', 'Active'],
+                        ['4', 'Talcher Coalfield', 'Odisha', 'Angul', 'Active'],
+                        ['5', 'Korba Coalfield', 'Chhattisgarh', 'Korba', 'Active']
+                    ],
+                    theme: 'striped',
+                    headStyles: { fillColor: [59, 130, 246], fontSize: 9 },
+                    styles: { fontSize: 8 }
+                });
+                
+                // Footer
+                const pageCount = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= pageCount; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(8);
+                    doc.setTextColor(100);
+                    doc.text(
+                        `Page ${i} of ${pageCount}`,
+                        105,
+                        285,
+                        { align: 'center' }
+                    );
+                }
+                
+                doc.save('test-complex.pdf');
+                log('✓ Complex PDF generated successfully!');
+                log('✓ All features working: title, tables, colors, footers');
+            } catch (error) {
+                log('✗ Error: ' + error.message, true);
+                console.error(error);
+            }
+        }
+
+        // Log library versions
+        window.addEventListener('load', () => {
+            try {
+                const { jsPDF } = window.jspdf;
+                log(`jsPDF library loaded successfully`);
+                if (typeof jsPDF === 'function') {
+                    log('✓ jsPDF is available and ready to use');
+                }
+            } catch (error) {
+                log('✗ jsPDF library failed to load', true);
+            }
+        });
+    </script>
+</body>
+</html>

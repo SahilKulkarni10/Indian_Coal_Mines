@@ -1,0 +1,5 @@
+{
+  "name": "CoalSight AI: AI-Powered Coal Deposit Map",
+  "description": "An interactive web application that visualizes both existing and AI-predicted coal mine zones across India using mock satellite imagery and deep learning results.",
+  "requestFramePermissions": []
+}
