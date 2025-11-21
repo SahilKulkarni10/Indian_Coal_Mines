@@ -1,4 +1,4 @@
-# 🪨 CoalSight AI: Platform for Resource Mapping in Indian Coal Mines
+# 🪨 CoalSight AI: Platform for Resource Mapping in Indian Coal Mines.
 
 <div align="center">
 
